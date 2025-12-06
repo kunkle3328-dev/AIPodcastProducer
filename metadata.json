@@ -1,0 +1,5 @@
+{
+  "name": "AI Podcast Producer",
+  "description": "An AI-powered production studio that takes a topic or text input and generates a complete podcast episode—script, voices, background music, and cover art.",
+  "requestFramePermissions": []
+}
