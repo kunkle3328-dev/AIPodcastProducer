@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import type { GenerationOptions, VoiceStyle, ShowNotes, EpisodeTone } from '../types';
 
@@ -37,7 +36,7 @@ export const generatePodcastScript = async (options: GenerationOptions): Promise
     : "The podcast has a single host, 'Alex'. Include natural pauses and rhetorical questions.";
 
   const prompt = `
-    You are a world-class podcast producer and scriptwriter.
+    You are a world-class podcast producer and scriptwriter using Gemini 3 Pro intelligence.
     Generate a complete, studio-quality podcast script.
 
     Parameters:
@@ -58,7 +57,7 @@ export const generatePodcastScript = async (options: GenerationOptions): Promise
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-pro-preview',
       contents: prompt,
       config: {
         responseMimeType: "application/json",
@@ -168,9 +167,16 @@ export const generateCoverArt = async (title: string): Promise<string> => {
         Ensure the text is legible and centered.
     `;
     try {
+        // Fallback to flash-image as pro-image-preview often returns 403 Permission Denied
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash-image',
             contents: { parts: [{ text: prompt }] },
+            config: {
+                imageConfig: {
+                    aspectRatio: "1:1"
+                    // imageSize is not supported in flash-image
+                }
+            }
         });
         
         if (response.candidates?.[0]?.content?.parts) {
@@ -196,7 +202,7 @@ export const generateShowNotes = async (title: string, script: string): Promise<
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3-pro-preview',
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -229,7 +235,7 @@ export const generateSpinoffs = async (title: string, script: string): Promise<A
 
     try {
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3-pro-preview',
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -257,7 +263,7 @@ export const generateSpinoffs = async (title: string, script: string): Promise<A
 
 export const getHostChatModel = (script: string, hostName: string) => {
     return ai.chats.create({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3-pro-preview',
         config: {
             systemInstruction: `You are ${hostName}, the host of this podcast. 
             Answer listener questions based ONLY on the script. 
